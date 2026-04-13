@@ -1,0 +1,39 @@
+[workspace]
+members = [
+    "crates/quex-driver",
+    "crates/quex",
+    "crates/quex-mariadb-sys",
+    "crates/quex-pq-sys",
+    "crates/quex-sqlite3-sys",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/dgagn/quex"
+homepage = "https://github.com/dgagn/quex"
+readme = "readme.md"
+keywords = ["database", "mysql", "postgres", "sqlite", "async"]
+categories = ["database", "asynchronous"]
+
+[workspace.dependencies]
+bindgen = "0.72"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+criterion = { version = "0.5", features = ["async_tokio"] }
+futures-util = "0.3"
+libc = "0.2"
+pkg-config = "0.3"
+quex = { path = "crates/quex", version = "0.1.0" }
+quex-driver = { path = "crates/quex-driver", version = "0.1.0", default-features = false }
+quex-mariadb-sys = { path = "crates/quex-mariadb-sys", version = "0.1.0" }
+quex-pq-sys = { path = "crates/quex-pq-sys", version = "0.1.0" }
+quex-sqlite3-sys = { path = "crates/quex-sqlite3-sys", version = "0.1.0" }
+serde_json = "1"
+sqlx = { version = "0.8", default-features = false, features = ["mysql", "postgres", "sqlite", "runtime-tokio"] }
+time = { version = "0.3", features = ["formatting", "macros", "parsing"] }
+tokio = "1.48"
+url = "2"
+uuid = "1"

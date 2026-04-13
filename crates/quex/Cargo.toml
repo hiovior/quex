@@ -1,0 +1,78 @@
+[package]
+name = "quex"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "A small async database facade for MariaDB/MySQL, Postgres, and SQLite."
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/quex"
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+chrono = { workspace = true, optional = true }
+quex-driver.workspace = true
+serde_json = { workspace = true, optional = true }
+time = { workspace = true, optional = true }
+tokio = { workspace = true, features = ["sync"] }
+url.workspace = true
+uuid = { workspace = true, optional = true }
+
+[features]
+default = []
+chrono = ["dep:chrono"]
+json = ["dep:serde_json"]
+mysql = ["quex-driver/mysql"]
+postgres = ["quex-driver/postgres"]
+sqlite = ["quex-driver/sqlite"]
+time = ["dep:time"]
+uuid = ["dep:uuid"]
+
+[dev-dependencies]
+criterion.workspace = true
+futures-util.workspace = true
+sqlx.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+[[bench]]
+name = "vs_sqlx"
+harness = false
+
+[[bench]]
+name = "vs_sqlx_multithread"
+harness = false
+
+[[bench]]
+name = "vs_sqlx_sqlite"
+harness = false
+
+[[bench]]
+name = "vs_sqlx_postgres"
+harness = false
+
+[[bench]]
+name = "quex_vs_sqlx"
+harness = false
+
+[[example]]
+name = "basic"
+required-features = ["mysql"]
+
+[[example]]
+name = "postgres_basic"
+required-features = ["postgres"]
+
+[[example]]
+name = "sqlite_basic"
+required-features = ["sqlite"]
+
+[[example]]
+name = "qb"
+required-features = ["sqlite"]
+
+[[example]]
+name = "quex_basic"
+required-features = ["sqlite"]

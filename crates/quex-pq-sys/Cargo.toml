@@ -1,0 +1,16 @@
+[package]
+name = "quex-pq-sys"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Raw bindgen bindings to libpq for quex."
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/quex-pq-sys"
+keywords = ["postgres", "postgresql", "libpq", "ffi", "database"]
+categories = ["external-ffi-bindings", "database"]
+
+[build-dependencies]
+bindgen.workspace = true
+pkg-config.workspace = true

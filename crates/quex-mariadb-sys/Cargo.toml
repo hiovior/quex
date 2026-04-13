@@ -1,0 +1,17 @@
+[package]
+name = "quex-mariadb-sys"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Raw bindgen bindings to MariaDB Connector/C for quex."
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/quex-mariadb-sys"
+keywords = ["mariadb", "mysql", "ffi", "database"]
+categories = ["external-ffi-bindings", "database"]
+links = "mariadb"
+
+[build-dependencies]
+bindgen.workspace = true
+pkg-config.workspace = true

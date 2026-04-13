@@ -1,0 +1,20 @@
+[package]
+name = "quex-sqlite3-sys"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Raw bindgen bindings to SQLite for quex."
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/quex-sqlite3-sys"
+keywords = ["sqlite", "sqlite3", "ffi", "database"]
+categories = ["external-ffi-bindings", "database"]
+
+[lib]
+name = "quex_sqlite3_sys"
+path = "src/lib.rs"
+
+[build-dependencies]
+bindgen.workspace = true
+pkg-config.workspace = true

@@ -1,0 +1,26 @@
+[package]
+name = "quex-driver"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Low-level async database drivers used by quex."
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/quex-driver"
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+libc.workspace = true
+quex-mariadb-sys = { workspace = true, optional = true }
+quex-pq-sys = { workspace = true, optional = true }
+quex-sqlite3-sys = { workspace = true, optional = true }
+tokio = { workspace = true, features = ["macros", "net", "rt", "sync", "time"] }
+
+[features]
+default = []
+mysql = ["dep:quex-mariadb-sys"]
+postgres = ["dep:quex-pq-sys"]
+sqlite = ["dep:quex-sqlite3-sys"]
