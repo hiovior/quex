@@ -70,6 +70,25 @@
 //! # }
 //! ```
 //!
+//! When you already have a [`Pool`], the high-level query helpers can run
+//! directly against it:
+//!
+//! ```no_run
+//! # use quex::{Pool, SqliteConnectOptions};
+//! # async fn run() -> quex::Result<()> {
+//! let pool = Pool::connect(SqliteConnectOptions::new().in_memory())?
+//!     .max_size(4)
+//!     .build()
+//!     .await?;
+//!
+//! let ids: Vec<i64> = quex::query("select id from users order by id")
+//!     .all(&pool)
+//!     .await?;
+//! # let _ = ids;
+//! # Ok(())
+//! # }
+//! ```
+//!
 //! A few things matter when using the crate:
 //!
 //! - Borrowed rows only live until the stream advances. If you need to keep

@@ -1203,7 +1203,7 @@ dependencies = [
 
 [[package]]
 name = "quex"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "criterion",
@@ -1219,7 +1219,7 @@ dependencies = [
 
 [[package]]
 name = "quex-driver"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "libc",
  "quex-mariadb-sys",
@@ -1230,7 +1230,7 @@ dependencies = [
 
 [[package]]
 name = "quex-mariadb-sys"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "bindgen",
  "pkg-config",
@@ -1238,7 +1238,7 @@ dependencies = [
 
 [[package]]
 name = "quex-pq-sys"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "bindgen",
  "pkg-config",
@@ -1246,7 +1246,7 @@ dependencies = [
 
 [[package]]
 name = "quex-sqlite3-sys"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "bindgen",
  "pkg-config",

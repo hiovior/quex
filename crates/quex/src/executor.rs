@@ -282,11 +282,15 @@ impl<'a> Query<'a> {
     /// Returns the first decoded row.
     ///
     /// This errors if the query returns no rows. Extra rows are ignored.
-    pub async fn one<T>(self, exec: &mut impl Executor) -> Result<T>
+    pub async fn one<T>(self, mut exec: impl Executor) -> Result<T>
     where
         T: FromRow,
     {
-        let mut rows = self.fetch(exec).await?;
+        let mut rows = if self.params.is_empty() {
+            exec.query(self.sql).await?
+        } else {
+            exec.query_prepared_source(self.sql, &self).await?
+        };
         decode_one_rows(&mut rows).await
     }
 
@@ -294,26 +298,35 @@ impl<'a> Query<'a> {
     ///
     /// This returns `Ok(None)` when the query returns no rows. Extra rows are
     /// ignored.
-    pub async fn optional<T>(self, exec: &mut impl Executor) -> Result<Option<T>>
+    pub async fn optional<T>(self, mut exec: impl Executor) -> Result<Option<T>>
     where
         T: FromRow,
     {
-        let mut rows = self.fetch(exec).await?;
+        let mut rows = if self.params.is_empty() {
+            exec.query(self.sql).await?
+        } else {
+            exec.query_prepared_source(self.sql, &self).await?
+        };
         decode_optional_rows(&mut rows).await
     }
 
     /// Collects every row and decodes it.
-    pub async fn all<T>(self, exec: &mut impl Executor) -> Result<Vec<T>>
+    pub async fn all<T>(self, mut exec: impl Executor) -> Result<Vec<T>>
     where
         T: FromRow,
     {
-        collect_decoded_rows(self.fetch(exec).await?).await
+        let rows = if self.params.is_empty() {
+            exec.query(self.sql).await?
+        } else {
+            exec.query_prepared_source(self.sql, &self).await?
+        };
+        collect_decoded_rows(rows).await
     }
 
     /// Executes the query when no rows are expected.
     ///
     /// Use [`Self::fetch`] when the statement returns rows.
-    pub async fn execute(self, exec: &mut impl Executor) -> Result<ExecResult> {
+    pub async fn execute(self, mut exec: impl Executor) -> Result<ExecResult> {
         let mut stmt = exec.prepare(self.sql).await?;
         stmt.exec_source(&self).await
     }

@@ -42,7 +42,8 @@ impl FromRow for User {
 async fn run() -> quex::Result<()> {
     let pool = Pool::connect(SqliteConnectOptions::new().in_memory())?
         .max_size(4)
-        .build()?;
+        .build()
+        .await?;
     let mut db = pool.acquire().await?;
 
     quex::query("create table users(id integer primary key, name text not null)")
@@ -56,6 +57,26 @@ async fn run() -> quex::Result<()> {
 
     let users = quex::query("select id, name from users")
         .all::<User>(&mut db)
+        .await?;
+
+    Ok(())
+}
+```
+
+If you do not need to hold on to one checked-out connection, the high-level
+helpers can run straight against the pool:
+
+```rust
+use quex::{Pool, SqliteConnectOptions, query};
+
+async fn run() -> quex::Result<()> {
+    let pool = Pool::connect(SqliteConnectOptions::new().in_memory())?
+        .max_size(4)
+        .build()
+        .await?;
+
+    let ids: Vec<i64> = query("select id from users order by id")
+        .all(&pool)
         .await?;
 
     Ok(())

@@ -1166,6 +1166,49 @@ async fn scalar_from_row_decodes_one_column_queries() {
 
 #[cfg(feature = "sqlite")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn pool_helpers_accept_shared_pool_references() {
+    let pool = Pool::connect(SqliteConnectOptions::new().in_memory())
+        .unwrap()
+        .max_size(4)
+        .build()
+        .await
+        .unwrap();
+
+    query("create table t(id integer primary key, score integer not null);")
+        .execute(&pool)
+        .await
+        .unwrap();
+
+    for score in [17, 19, 23] {
+        query("insert into t(score) values(?)")
+            .bind(score)
+            .execute(&pool)
+            .await
+            .unwrap();
+    }
+
+    let first: i64 = query("select score from t order by score")
+        .one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(first, 17);
+
+    let missing: Option<i64> = query("select score from t where score = ?")
+        .bind(99)
+        .optional(&pool)
+        .await
+        .unwrap();
+    assert_eq!(missing, None);
+
+    let scores: Vec<i64> = query("select score from t order by score")
+        .all(&pool)
+        .await
+        .unwrap();
+    assert_eq!(scores, vec![17, 19, 23]);
+}
+
+#[cfg(feature = "sqlite")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn tuple_from_row_decodes_scalar_columns() {
     let mut db = Connection::connect(SqliteConnectOptions::new().in_memory())
         .await

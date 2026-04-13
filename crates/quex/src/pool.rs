@@ -112,6 +112,38 @@ impl Connection {
     }
 }
 
+impl Executor for &mut Connection {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = Statement<'a>
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        Connection::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        Connection::query(*self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = Connection::prepare(*self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        Connection::prepare(*self, sql).await
+    }
+}
+
 impl Executor for Connection {
     type Rows<'a>
         = Rows<'a>
@@ -321,6 +353,38 @@ impl PoolTransaction {
     }
 }
 
+impl Executor for &mut Transaction<'_> {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = Statement<'a>
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        Transaction::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        Transaction::query(*self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = Transaction::prepare(*self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        Transaction::prepare(*self, sql).await
+    }
+}
+
 impl Executor for Transaction<'_> {
     type Rows<'a>
         = Rows<'a>
@@ -356,6 +420,38 @@ impl Executor for Transaction<'_> {
 impl Drop for Transaction<'_> {
     fn drop(&mut self) {
         let _ = self.inner.take();
+    }
+}
+
+impl Executor for &mut PoolTransaction {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = PooledStatement<'a>
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        PoolTransaction::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        PoolTransaction::query(*self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = PoolTransaction::prepare(*self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        PoolTransaction::prepare(*self, sql).await
     }
 }
 
@@ -831,6 +927,70 @@ impl Pool {
     }
 }
 
+impl Executor for &Pool {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = PoolStatement
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        Pool::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        Pool::query(self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = Pool::prepare(self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        Pool::prepare(self, sql).await
+    }
+}
+
+impl Executor for &mut Pool {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = PoolStatement
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        Pool::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        Pool::query(self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = Pool::prepare(self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        Pool::prepare(self, sql).await
+    }
+}
+
 impl Executor for Pool {
     type Rows<'a>
         = Rows<'a>
@@ -1158,6 +1318,38 @@ impl PreparedStatement for PoolStatement {
     }
 }
 
+impl Executor for &mut PooledConnection {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = PooledStatement<'a>
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        PooledConnection::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        PooledConnection::query(*self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = PooledConnection::prepare(*self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        PooledConnection::prepare(*self, sql).await
+    }
+}
+
 impl Executor for PooledConnection {
     type Rows<'a>
         = Rows<'a>
@@ -1272,7 +1464,39 @@ impl<'a> PooledTransaction<'a> {
     }
 }
 
-impl<'tx> Executor for PooledTransaction<'tx> {
+impl Executor for &mut PooledTransaction<'_> {
+    type Rows<'a>
+        = Rows<'a>
+    where
+        Self: 'a;
+    type Statement<'a>
+        = PooledStatement<'a>
+    where
+        Self: 'a;
+
+    fn driver(&self) -> Driver {
+        PooledTransaction::driver(self)
+    }
+
+    async fn query(&mut self, sql: &str) -> Result<Self::Rows<'_>> {
+        PooledTransaction::query(*self, sql).await
+    }
+
+    async fn query_prepared_source<P>(&mut self, sql: &str, params: &P) -> Result<Self::Rows<'_>>
+    where
+        P: ParamSource + ?Sized,
+    {
+        let mut stmt = PooledTransaction::prepare(*self, sql).await?;
+        let rows = stmt.execute_source(params).await?;
+        Ok(rows.into_lifetime())
+    }
+
+    async fn prepare(&mut self, sql: &str) -> Result<Self::Statement<'_>> {
+        PooledTransaction::prepare(*self, sql).await
+    }
+}
+
+impl Executor for PooledTransaction<'_> {
     type Rows<'a>
         = Rows<'a>
     where
